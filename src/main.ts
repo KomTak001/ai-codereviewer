@@ -226,6 +226,7 @@ async function main() {
     return;
   }
 
+  console.log("before parseDiff");
   const parsedDiff = parseDiff(diff);
 
   const excludePatterns = core
@@ -239,6 +240,7 @@ async function main() {
     );
   });
 
+  console.log("before analyzeCode");
   const comments = await analyzeCode(filteredDiff, prDetails);
   if (comments.length > 0) {
     await createReviewComment(
