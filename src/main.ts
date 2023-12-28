@@ -142,9 +142,6 @@ async function getAIResponse(prompt: string): Promise<Array<{
         },
       ],
     }, {
-      headers: {
-        "api-key": OPENAI_API_KEY
-      },
       query: {
         "api-version": AZURE_OPENAI_API_VERSION,
       }
