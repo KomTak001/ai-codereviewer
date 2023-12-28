@@ -15,6 +15,10 @@ inputs:
     description: "OpenAI API model."
     required: false
     default: "gpt-4"
+  AZURE_OPENAI_API_VERSION:
+    description: "Azure OpenAI API version."
+    required: false
+    default: "2023-05-15"
   exclude:
     description: "Glob patterns to exclude files from the diff analysis"
     required: false

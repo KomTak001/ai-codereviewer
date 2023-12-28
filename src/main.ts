@@ -11,6 +11,7 @@ const GITHUB_TOKEN: string = core.getInput("GITHUB_TOKEN");
 const OPENAI_BASE_URL: string = core.getInput("OPENAI_BASE_URL");
 const OPENAI_API_KEY: string = core.getInput("OPENAI_API_KEY");
 const OPENAI_API_MODEL: string = core.getInput("OPENAI_API_MODEL");
+const AZURE_OPENAI_API_VERSION: string = core.getInput("AZURE_OPENAI_API_VERSION");
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
@@ -142,7 +143,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
       ],
     }, {
       query: {
-        "api-version": "2023-05-15",
+        "api-version": AZURE_OPENAI_API_VERSION,
       }
     });
 
