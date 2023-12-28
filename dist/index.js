@@ -6,41 +6,88 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
+var __createBinding =
+  (this && this.__createBinding) ||
+  (Object.create
+    ? function (o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        var desc = Object.getOwnPropertyDescriptor(m, k);
+        if (
+          !desc ||
+          ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)
+        ) {
+          desc = {
+            enumerable: true,
+            get: function () {
+              return m[k];
+            },
+          };
+        }
+        Object.defineProperty(o, k2, desc);
+      }
+    : function (o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+      });
+var __setModuleDefault =
+  (this && this.__setModuleDefault) ||
+  (Object.create
+    ? function (o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+      }
+    : function (o, v) {
+        o["default"] = v;
+      });
+var __importStar =
+  (this && this.__importStar) ||
+  function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null)
+      for (var k in mod)
+        if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+          __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+  };
+var __awaiter =
+  (this && this.__awaiter) ||
+  function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+      return value instanceof P
+        ? value
+        : new P(function (resolve) {
+            resolve(value);
+          });
+    }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done
+          ? resolve(result.value)
+          : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+  };
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __nccwpck_require__(7147);
 const core = __importStar(__nccwpck_require__(2186));
@@ -48,65 +95,70 @@ const openai_1 = __importDefault(__nccwpck_require__(47));
 const rest_1 = __nccwpck_require__(5375);
 const parse_diff_1 = __importDefault(__nccwpck_require__(4833));
 const minimatch_1 = __importDefault(__nccwpck_require__(2002));
+console.log("Starting code review bot");
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
+const OPENAI_BASE_URL = core.getInput("OPENAI_BASE_URL");
 const OPENAI_API_KEY = core.getInput("OPENAI_API_KEY");
 const OPENAI_API_MODEL = core.getInput("OPENAI_API_MODEL");
 const octokit = new rest_1.Octokit({ auth: GITHUB_TOKEN });
 const openai = new openai_1.default({
-    apiKey: OPENAI_API_KEY,
+  baseURL: OPENAI_BASE_URL,
+  apiKey: OPENAI_API_KEY,
 });
 function getPRDetails() {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        const { repository, number } = JSON.parse((0, fs_1.readFileSync)(process.env.GITHUB_EVENT_PATH || "", "utf8"));
-        const prResponse = yield octokit.pulls.get({
-            owner: repository.owner.login,
-            repo: repository.name,
-            pull_number: number,
-        });
-        return {
-            owner: repository.owner.login,
-            repo: repository.name,
-            pull_number: number,
-            title: (_a = prResponse.data.title) !== null && _a !== void 0 ? _a : "",
-            description: (_b = prResponse.data.body) !== null && _b !== void 0 ? _b : "",
-        };
+  var _a, _b;
+  return __awaiter(this, void 0, void 0, function* () {
+    const { repository, number } = JSON.parse(
+      (0, fs_1.readFileSync)(process.env.GITHUB_EVENT_PATH || "", "utf8")
+    );
+    const prResponse = yield octokit.pulls.get({
+      owner: repository.owner.login,
+      repo: repository.name,
+      pull_number: number,
     });
+    return {
+      owner: repository.owner.login,
+      repo: repository.name,
+      pull_number: number,
+      title: (_a = prResponse.data.title) !== null && _a !== void 0 ? _a : "",
+      description:
+        (_b = prResponse.data.body) !== null && _b !== void 0 ? _b : "",
+    };
+  });
 }
 function getDiff(owner, repo, pull_number) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield octokit.pulls.get({
-            owner,
-            repo,
-            pull_number,
-            mediaType: { format: "diff" },
-        });
-        // @ts-expect-error - response.data is a string
-        return response.data;
+  return __awaiter(this, void 0, void 0, function* () {
+    const response = yield octokit.pulls.get({
+      owner,
+      repo,
+      pull_number,
+      mediaType: { format: "diff" },
     });
+    // @ts-expect-error - response.data is a string
+    return response.data;
+  });
 }
 function analyzeCode(parsedDiff, prDetails) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const comments = [];
-        for (const file of parsedDiff) {
-            if (file.to === "/dev/null")
-                continue; // Ignore deleted files
-            for (const chunk of file.chunks) {
-                const prompt = createPrompt(file, chunk, prDetails);
-                const aiResponse = yield getAIResponse(prompt);
-                if (aiResponse) {
-                    const newComments = createComment(file, chunk, aiResponse);
-                    if (newComments) {
-                        comments.push(...newComments);
-                    }
-                }
-            }
+  return __awaiter(this, void 0, void 0, function* () {
+    const comments = [];
+    for (const file of parsedDiff) {
+      if (file.to === "/dev/null") continue; // Ignore deleted files
+      for (const chunk of file.chunks) {
+        const prompt = createPrompt(file, chunk, prDetails);
+        const aiResponse = yield getAIResponse(prompt);
+        if (aiResponse) {
+          const newComments = createComment(file, chunk, aiResponse);
+          if (newComments) {
+            comments.push(...newComments);
+          }
         }
-        return comments;
-    });
+      }
+    }
+    return comments;
+  });
 }
 function createPrompt(file, chunk, prDetails) {
-    return `Your task is to review pull requests. Instructions:
+  return `Your task is to review pull requests. Instructions:
 - Provide the response in following JSON format:  {"reviews": [{"lineNumber":  <line_number>, "reviewComment": "<review comment>"}]}
 - Do not give positive comments or compliments.
 - Provide comments and suggestions ONLY if there is something to improve, otherwise "reviews" should be an empty array.
@@ -114,7 +166,9 @@ function createPrompt(file, chunk, prDetails) {
 - Use the given description only for the overall context and only comment the code.
 - IMPORTANT: NEVER suggest adding comments to the code.
 
-Review the following code diff in the file "${file.to}" and take the pull request title and description into account when writing the response.
+Review the following code diff in the file "${
+    file.to
+  }" and take the pull request title and description into account when writing the response.
   
 Pull request title: ${prDetails.title}
 Pull request description:
@@ -128,112 +182,149 @@ Git diff to review:
 \`\`\`diff
 ${chunk.content}
 ${chunk.changes
-        // @ts-expect-error - ln and ln2 exists where needed
-        .map((c) => `${c.ln ? c.ln : c.ln2} ${c.content}`)
-        .join("\n")}
+  // @ts-expect-error - ln and ln2 exists where needed
+  .map((c) => `${c.ln ? c.ln : c.ln2} ${c.content}`)
+  .join("\n")}
 \`\`\`
 `;
 }
 function getAIResponse(prompt) {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        const queryConfig = {
-            model: OPENAI_API_MODEL,
-            temperature: 0.2,
-            max_tokens: 700,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-        };
-        try {
-            const response = yield openai.chat.completions.create(Object.assign(Object.assign(Object.assign({}, queryConfig), (OPENAI_API_MODEL === "gpt-4-1106-preview"
-                ? { response_format: { type: "json_object" } }
-                : {})), { messages: [
-                    {
-                        role: "system",
-                        content: prompt,
-                    },
-                ] }));
-            const res = ((_b = (_a = response.choices[0].message) === null || _a === void 0 ? void 0 : _a.content) === null || _b === void 0 ? void 0 : _b.trim()) || "{}";
-            return JSON.parse(res).reviews;
-        }
-        catch (error) {
-            console.error("Error:", error);
-            return null;
-        }
-    });
+  var _a, _b;
+  return __awaiter(this, void 0, void 0, function* () {
+    const queryConfig = {
+      model: OPENAI_API_MODEL,
+      temperature: 0.2,
+      max_tokens: 700,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    };
+    try {
+      const response = yield openai.chat.completions.create(
+        Object.assign(
+          Object.assign(
+            Object.assign({}, queryConfig),
+            OPENAI_API_MODEL === "gpt-4-1106-preview"
+              ? { response_format: { type: "json_object" } }
+              : {}
+          ),
+          {
+            messages: [
+              {
+                role: "system",
+                content: prompt,
+              },
+            ],
+          }
+        )
+      );
+      const res =
+        ((_b =
+          (_a = response.choices[0].message) === null || _a === void 0
+            ? void 0
+            : _a.content) === null || _b === void 0
+          ? void 0
+          : _b.trim()) || "{}";
+      return JSON.parse(res).reviews;
+    } catch (error) {
+      console.error("Error:", error);
+      return null;
+    }
+  });
 }
 function createComment(file, chunk, aiResponses) {
-    return aiResponses.flatMap((aiResponse) => {
-        if (!file.to) {
-            return [];
-        }
-        return {
-            body: aiResponse.reviewComment,
-            path: file.to,
-            line: Number(aiResponse.lineNumber),
-        };
-    });
+  return aiResponses.flatMap((aiResponse) => {
+    if (!file.to) {
+      return [];
+    }
+    return {
+      body: aiResponse.reviewComment,
+      path: file.to,
+      line: Number(aiResponse.lineNumber),
+    };
+  });
 }
 function createReviewComment(owner, repo, pull_number, comments) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.pulls.createReview({
-            owner,
-            repo,
-            pull_number,
-            comments,
-            event: "COMMENT",
-        });
+  return __awaiter(this, void 0, void 0, function* () {
+    yield octokit.pulls.createReview({
+      owner,
+      repo,
+      pull_number,
+      comments,
+      event: "COMMENT",
     });
+  });
 }
 function main() {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        const prDetails = yield getPRDetails();
-        let diff;
-        const eventData = JSON.parse((0, fs_1.readFileSync)((_a = process.env.GITHUB_EVENT_PATH) !== null && _a !== void 0 ? _a : "", "utf8"));
-        if (eventData.action === "opened") {
-            diff = yield getDiff(prDetails.owner, prDetails.repo, prDetails.pull_number);
-        }
-        else if (eventData.action === "synchronize") {
-            const newBaseSha = eventData.before;
-            const newHeadSha = eventData.after;
-            const response = yield octokit.repos.compareCommits({
-                headers: {
-                    accept: "application/vnd.github.v3.diff",
-                },
-                owner: prDetails.owner,
-                repo: prDetails.repo,
-                base: newBaseSha,
-                head: newHeadSha,
-            });
-            diff = String(response.data);
-        }
-        else {
-            console.log("Unsupported event:", process.env.GITHUB_EVENT_NAME);
-            return;
-        }
-        if (!diff) {
-            console.log("No diff found");
-            return;
-        }
-        const parsedDiff = (0, parse_diff_1.default)(diff);
-        const excludePatterns = core
-            .getInput("exclude")
-            .split(",")
-            .map((s) => s.trim());
-        const filteredDiff = parsedDiff.filter((file) => {
-            return !excludePatterns.some((pattern) => { var _a; return (0, minimatch_1.default)((_a = file.to) !== null && _a !== void 0 ? _a : "", pattern); });
-        });
-        const comments = yield analyzeCode(filteredDiff, prDetails);
-        if (comments.length > 0) {
-            yield createReviewComment(prDetails.owner, prDetails.repo, prDetails.pull_number, comments);
-        }
+  var _a;
+  return __awaiter(this, void 0, void 0, function* () {
+    console.log("main process started");
+    console.log("base_url:", OPENAI_BASE_URL);
+    const prDetails = yield getPRDetails();
+    let diff;
+    const eventData = JSON.parse(
+      (0, fs_1.readFileSync)(
+        (_a = process.env.GITHUB_EVENT_PATH) !== null && _a !== void 0
+          ? _a
+          : "",
+        "utf8"
+      )
+    );
+    if (eventData.action === "opened") {
+      diff = yield getDiff(
+        prDetails.owner,
+        prDetails.repo,
+        prDetails.pull_number
+      );
+    } else if (eventData.action === "synchronize") {
+      const newBaseSha = eventData.before;
+      const newHeadSha = eventData.after;
+      const response = yield octokit.repos.compareCommits({
+        headers: {
+          accept: "application/vnd.github.v3.diff",
+        },
+        owner: prDetails.owner,
+        repo: prDetails.repo,
+        base: newBaseSha,
+        head: newHeadSha,
+      });
+      diff = String(response.data);
+    } else {
+      console.log("Unsupported event:", process.env.GITHUB_EVENT_NAME);
+      return;
+    }
+    if (!diff) {
+      console.log("No diff found");
+      return;
+    }
+    const parsedDiff = (0, parse_diff_1.default)(diff);
+    const excludePatterns = core
+      .getInput("exclude")
+      .split(",")
+      .map((s) => s.trim());
+    const filteredDiff = parsedDiff.filter((file) => {
+      return !excludePatterns.some((pattern) => {
+        var _a;
+        return (0, minimatch_1.default)(
+          (_a = file.to) !== null && _a !== void 0 ? _a : "",
+          pattern
+        );
+      });
     });
+    const comments = yield analyzeCode(filteredDiff, prDetails);
+    if (comments.length > 0) {
+      yield createReviewComment(
+        prDetails.owner,
+        prDetails.repo,
+        prDetails.pull_number,
+        comments
+      );
+    }
+  });
 }
 main().catch((error) => {
-    console.error("Error:", error);
-    process.exit(1);
+  console.error("Error:", error);
+  process.exit(1);
 });
 
 
@@ -19496,7 +19587,8 @@ class APIError extends OpenAIError {
     }
     static makeMessage(status, error, message) {
         const msg = error?.message ?
-            typeof error.message === 'string' ? error.message
+            typeof error.message === 'string' ?
+                error.message
                 : JSON.stringify(error.message)
             : error ? JSON.stringify(error)
                 : message;
@@ -19666,9 +19758,9 @@ class OpenAI extends Core.APIClient {
     /**
      * API Client for interfacing with the OpenAI API.
      *
-     * @param {string} [opts.apiKey==process.env['OPENAI_API_KEY'] ?? undefined]
-     * @param {string | null} [opts.organization==process.env['OPENAI_ORG_ID'] ?? null]
-     * @param {string} [opts.baseURL] - Override the default base URL for the API.
+     * @param {string} [opts.apiKey=process.env['OPENAI_API_KEY'] ?? undefined]
+     * @param {string | null} [opts.organization=process.env['OPENAI_ORG_ID'] ?? null]
+     * @param {string} [opts.baseURL=process.env['OPENAI_BASE_URL'] ?? https://api.openai.com/v1] - Override the default base URL for the API.
      * @param {number} [opts.timeout=10 minutes] - The maximum amount of time (in milliseconds) the client will wait for a response before timing out.
      * @param {number} [opts.httpAgent] - An HTTP agent used to manage HTTP(s) connections.
      * @param {Core.Fetch} [opts.fetch] - Specify a custom `fetch` function implementation.
@@ -19677,7 +19769,7 @@ class OpenAI extends Core.APIClient {
      * @param {Core.DefaultQuery} opts.defaultQuery - Default query parameters to include with every request to the API.
      * @param {boolean} [opts.dangerouslyAllowBrowser=false] - By default, client-side use of this library is not allowed, as it risks exposing your secret API credentials to attackers.
      */
-    constructor({ apiKey = Core.readEnv('OPENAI_API_KEY'), organization = Core.readEnv('OPENAI_ORG_ID') ?? null, ...opts } = {}) {
+    constructor({ baseURL = Core.readEnv('OPENAI_BASE_URL'), apiKey = Core.readEnv('OPENAI_API_KEY'), organization = Core.readEnv('OPENAI_ORG_ID') ?? null, ...opts } = {}) {
         if (apiKey === undefined) {
             throw new Errors.OpenAIError("The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).");
         }
@@ -19685,7 +19777,7 @@ class OpenAI extends Core.APIClient {
             apiKey,
             organization,
             ...opts,
-            baseURL: opts.baseURL ?? `https://api.openai.com/v1`,
+            baseURL: baseURL ?? `https://api.openai.com/v1`,
         };
         if (!options.dangerouslyAllowBrowser && Core.isRunningInBrowser()) {
             throw new Errors.OpenAIError("It looks like you're running in a browser-like environment.\n\nThis is disabled by default, as it risks exposing your secret API credentials to attackers.\nIf you understand the risks and have appropriate mitigations in place,\nyou can set the `dangerouslyAllowBrowser` option to `true`, e.g.,\n\nnew OpenAI({ apiKey, dangerouslyAllowBrowser: true });\n\nhttps://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety\n");
@@ -19868,6 +19960,8 @@ class AbstractChatCompletionRunner {
         return chatCompletion;
     }
     _addMessage(message, emit = true) {
+        if (!('content' in message))
+            message.content = null;
         this.messages.push(message);
         if (emit) {
             this._emit('message', message);
@@ -20014,8 +20108,9 @@ class AbstractChatCompletionRunner {
     }
     _emit(event, ...args) {
         // make sure we don't emit any events after end
-        if (__classPrivateFieldGet(this, _AbstractChatCompletionRunner_ended, "f"))
+        if (__classPrivateFieldGet(this, _AbstractChatCompletionRunner_ended, "f")) {
             return;
+        }
         if (event === 'end') {
             __classPrivateFieldSet(this, _AbstractChatCompletionRunner_ended, true, "f");
             __classPrivateFieldGet(this, _AbstractChatCompletionRunner_resolveEndPromise, "f").call(this);
@@ -20056,7 +20151,7 @@ class AbstractChatCompletionRunner {
         const completion = this._chatCompletions[this._chatCompletions.length - 1];
         if (completion)
             this._emit('finalChatCompletion', completion);
-        const finalMessage = this.messages[this.messages.length - 1];
+        const finalMessage = __classPrivateFieldGet(this, _AbstractChatCompletionRunner_instances, "m", _AbstractChatCompletionRunner_getFinalMessage).call(this);
         if (finalMessage)
             this._emit('finalMessage', finalMessage);
         const finalContent = __classPrivateFieldGet(this, _AbstractChatCompletionRunner_instances, "m", _AbstractChatCompletionRunner_getFinalContent).call(this);
@@ -20191,8 +20286,9 @@ class AbstractChatCompletionRunner {
             if (!message) {
                 throw new error_1.OpenAIError(`missing message in ChatCompletion response`);
             }
-            if (!message.tool_calls)
+            if (!message.tool_calls) {
                 return;
+            }
             for (const tool_call of message.tool_calls) {
                 if (tool_call.type !== 'function')
                     continue;
@@ -20224,21 +20320,23 @@ class AbstractChatCompletionRunner {
                 const rawContent = await fn.function(parsed, this);
                 const content = __classPrivateFieldGet(this, _AbstractChatCompletionRunner_instances, "m", _AbstractChatCompletionRunner_stringifyFunctionCallResult).call(this, rawContent);
                 this._addMessage({ role, tool_call_id, content });
-                if (singleFunctionToCall)
+                if (singleFunctionToCall) {
                     return;
+                }
             }
         }
+        return;
     }
 }
 exports.AbstractChatCompletionRunner = AbstractChatCompletionRunner;
 _AbstractChatCompletionRunner_connectedPromise = new WeakMap(), _AbstractChatCompletionRunner_resolveConnectedPromise = new WeakMap(), _AbstractChatCompletionRunner_rejectConnectedPromise = new WeakMap(), _AbstractChatCompletionRunner_endPromise = new WeakMap(), _AbstractChatCompletionRunner_resolveEndPromise = new WeakMap(), _AbstractChatCompletionRunner_rejectEndPromise = new WeakMap(), _AbstractChatCompletionRunner_listeners = new WeakMap(), _AbstractChatCompletionRunner_ended = new WeakMap(), _AbstractChatCompletionRunner_errored = new WeakMap(), _AbstractChatCompletionRunner_aborted = new WeakMap(), _AbstractChatCompletionRunner_catchingPromiseCreated = new WeakMap(), _AbstractChatCompletionRunner_handleError = new WeakMap(), _AbstractChatCompletionRunner_instances = new WeakSet(), _AbstractChatCompletionRunner_getFinalContent = function _AbstractChatCompletionRunner_getFinalContent() {
-    return __classPrivateFieldGet(this, _AbstractChatCompletionRunner_instances, "m", _AbstractChatCompletionRunner_getFinalMessage).call(this).content;
+    return __classPrivateFieldGet(this, _AbstractChatCompletionRunner_instances, "m", _AbstractChatCompletionRunner_getFinalMessage).call(this).content ?? null;
 }, _AbstractChatCompletionRunner_getFinalMessage = function _AbstractChatCompletionRunner_getFinalMessage() {
     let i = this.messages.length;
     while (i-- > 0) {
         const message = this.messages[i];
         if ((0, chatCompletionUtils_1.isAssistantMessage)(message)) {
-            return message;
+            return { ...message, content: message.content ?? null };
         }
     }
     throw new error_1.OpenAIError('stream ended without producing a ChatCompletionMessage with role=assistant');
@@ -20248,12 +20346,21 @@ _AbstractChatCompletionRunner_connectedPromise = new WeakMap(), _AbstractChatCom
         if ((0, chatCompletionUtils_1.isAssistantMessage)(message) && message?.function_call) {
             return message.function_call;
         }
+        if ((0, chatCompletionUtils_1.isAssistantMessage)(message) && message?.tool_calls?.length) {
+            return message.tool_calls.at(-1)?.function;
+        }
     }
     return;
 }, _AbstractChatCompletionRunner_getFinalFunctionCallResult = function _AbstractChatCompletionRunner_getFinalFunctionCallResult() {
     for (let i = this.messages.length - 1; i >= 0; i--) {
         const message = this.messages[i];
         if ((0, chatCompletionUtils_1.isFunctionMessage)(message) && message.content != null) {
+            return message.content;
+        }
+        if ((0, chatCompletionUtils_1.isToolMessage)(message) &&
+            message.content != null &&
+            this.messages.some((x) => x.role === 'assistant' &&
+                x.tool_calls?.some((y) => y.type === 'function' && y.id === message.tool_call_id))) {
             return message.content;
         }
     }
@@ -20295,14 +20402,23 @@ exports.ChatCompletionRunner = void 0;
 const AbstractChatCompletionRunner_1 = __nccwpck_require__(8398);
 const chatCompletionUtils_1 = __nccwpck_require__(7858);
 class ChatCompletionRunner extends AbstractChatCompletionRunner_1.AbstractChatCompletionRunner {
+    /** @deprecated - please use `runTools` instead. */
     static runFunctions(completions, params, options) {
         const runner = new ChatCompletionRunner();
-        runner._run(() => runner._runFunctions(completions, params, options));
+        const opts = {
+            ...options,
+            headers: { ...options?.headers, 'X-Stainless-Helper-Method': 'runFunctions' },
+        };
+        runner._run(() => runner._runFunctions(completions, params, opts));
         return runner;
     }
     static runTools(completions, params, options) {
         const runner = new ChatCompletionRunner();
-        runner._run(() => runner._runTools(completions, params, options));
+        const opts = {
+            ...options,
+            headers: { ...options?.headers, 'X-Stainless-Helper-Method': 'runTools' },
+        };
+        runner._run(() => runner._runTools(completions, params, opts));
         return runner;
     }
     _addMessage(message) {
@@ -20432,7 +20548,7 @@ class ChatCompletionStream extends AbstractChatCompletionRunner_1.AbstractChatCo
         __classPrivateFieldSet(this, _ChatCompletionStream_currentChatCompletionSnapshot, undefined, "f");
         return finalizeChatCompletion(snapshot);
     }, _ChatCompletionStream_accumulateChatCompletion = function _ChatCompletionStream_accumulateChatCompletion(chunk) {
-        var _a, _b;
+        var _a, _b, _c;
         let snapshot = __classPrivateFieldGet(this, _ChatCompletionStream_currentChatCompletionSnapshot, "f");
         const { choices, ...rest } = chunk;
         if (!snapshot) {
@@ -20444,11 +20560,20 @@ class ChatCompletionStream extends AbstractChatCompletionRunner_1.AbstractChatCo
         else {
             Object.assign(snapshot, rest);
         }
-        for (const { delta, finish_reason, index, ...other } of chunk.choices) {
+        for (const { delta, finish_reason, index, logprobs = null, ...other } of chunk.choices) {
             let choice = snapshot.choices[index];
             if (!choice) {
-                snapshot.choices[index] = { finish_reason, index, message: delta, ...other };
+                snapshot.choices[index] = { finish_reason, index, message: delta, logprobs, ...other };
                 continue;
+            }
+            if (logprobs) {
+                if (!choice.logprobs) {
+                    choice.logprobs = logprobs;
+                }
+                else if (logprobs.content) {
+                    (_a = choice.logprobs).content ?? (_a.content = []);
+                    choice.logprobs.content.push(...logprobs.content);
+                }
             }
             if (finish_reason)
                 choice.finish_reason = finish_reason;
@@ -20468,7 +20593,7 @@ class ChatCompletionStream extends AbstractChatCompletionRunner_1.AbstractChatCo
                     if (function_call.name)
                         choice.message.function_call.name = function_call.name;
                     if (function_call.arguments) {
-                        (_a = choice.message.function_call).arguments ?? (_a.arguments = '');
+                        (_b = choice.message.function_call).arguments ?? (_b.arguments = '');
                         choice.message.function_call.arguments += function_call.arguments;
                     }
                 }
@@ -20477,7 +20602,7 @@ class ChatCompletionStream extends AbstractChatCompletionRunner_1.AbstractChatCo
                 if (!choice.message.tool_calls)
                     choice.message.tool_calls = [];
                 for (const { index, id, type, function: fn } of tool_calls) {
-                    const tool_call = ((_b = choice.message.tool_calls)[index] ?? (_b[index] = {}));
+                    const tool_call = ((_c = choice.message.tool_calls)[index] ?? (_c[index] = {}));
                     if (id)
                         tool_call.id = id;
                     if (type)
@@ -20535,7 +20660,7 @@ function finalizeChatCompletion(snapshot) {
     const { id, choices, created, model } = snapshot;
     return {
         id,
-        choices: choices.map(({ message, finish_reason, index }) => {
+        choices: choices.map(({ message, finish_reason, index, logprobs }) => {
             if (!finish_reason)
                 throw new error_1.OpenAIError(`missing finish_reason for choice ${index}`);
             const { content = null, function_call, tool_calls } = message;
@@ -20548,12 +20673,18 @@ function finalizeChatCompletion(snapshot) {
                     throw new error_1.OpenAIError(`missing function_call.arguments for choice ${index}`);
                 if (!name)
                     throw new error_1.OpenAIError(`missing function_call.name for choice ${index}`);
-                return { message: { content, function_call: { arguments: args, name }, role }, finish_reason, index };
+                return {
+                    message: { content, function_call: { arguments: args, name }, role },
+                    finish_reason,
+                    index,
+                    logprobs,
+                };
             }
             if (tool_calls) {
                 return {
                     index,
                     finish_reason,
+                    logprobs,
                     message: {
                         role,
                         content,
@@ -20573,7 +20704,7 @@ function finalizeChatCompletion(snapshot) {
                     },
                 };
             }
-            return { message: { content: content, role }, finish_reason, index };
+            return { message: { content: content, role }, finish_reason, index, logprobs };
         }),
         created,
         model,
@@ -20601,20 +20732,23 @@ class ChatCompletionStreamingRunner extends ChatCompletionStream_1.ChatCompletio
         runner._run(() => runner._fromReadableStream(stream));
         return runner;
     }
+    /** @deprecated - please use `runTools` instead. */
     static runFunctions(completions, params, options) {
         const runner = new ChatCompletionStreamingRunner();
-        runner._run(() => runner._runFunctions(completions, params, {
+        const opts = {
             ...options,
             headers: { ...options?.headers, 'X-Stainless-Helper-Method': 'runFunctions' },
-        }));
+        };
+        runner._run(() => runner._runFunctions(completions, params, opts));
         return runner;
     }
     static runTools(completions, params, options) {
         const runner = new ChatCompletionStreamingRunner();
-        runner._run(() => runner._runTools(completions, params, {
+        const opts = {
             ...options,
             headers: { ...options?.headers, 'X-Stainless-Helper-Method': 'runTools' },
-        }));
+        };
+        runner._run(() => runner._runTools(completions, params, opts));
         return runner;
     }
 }
@@ -20629,7 +20763,7 @@ exports.ChatCompletionStreamingRunner = ChatCompletionStreamingRunner;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ParsingFunction = exports.isRunnableFunctionWithParse = void 0;
+exports.ParsingToolFunction = exports.ParsingFunction = exports.isRunnableFunctionWithParse = void 0;
 function isRunnableFunctionWithParse(fn) {
     return typeof fn.parse === 'function';
 }
@@ -20637,6 +20771,8 @@ exports.isRunnableFunctionWithParse = isRunnableFunctionWithParse;
 /**
  * This is helper class for passing a `function` and `parse` where the `function`
  * argument type matches the `parse` return type.
+ *
+ * @deprecated - please use ParsingToolFunction instead.
  */
 class ParsingFunction {
     constructor(input) {
@@ -20648,6 +20784,17 @@ class ParsingFunction {
     }
 }
 exports.ParsingFunction = ParsingFunction;
+/**
+ * This is helper class for passing a `function` and `parse` where the `function`
+ * argument type matches the `parse` return type.
+ */
+class ParsingToolFunction {
+    constructor(input) {
+        this.type = 'function';
+        this.function = input;
+    }
+}
+exports.ParsingToolFunction = ParsingToolFunction;
 //# sourceMappingURL=RunnableFunction.js.map
 
 /***/ }),
@@ -20694,11 +20841,11 @@ const core_1 = __nccwpck_require__(1798);
 class Page extends core_1.AbstractPage {
     constructor(client, response, body, options) {
         super(client, response, body, options);
-        this.data = body.data;
+        this.data = body.data || [];
         this.object = body.object;
     }
     getPaginatedItems() {
-        return this.data;
+        return this.data ?? [];
     }
     // @deprecated Please use `nextPageInfo()` instead
     /**
@@ -20716,10 +20863,10 @@ exports.Page = Page;
 class CursorPage extends core_1.AbstractPage {
     constructor(client, response, body, options) {
         super(client, response, body, options);
-        this.data = body.data;
+        this.data = body.data || [];
     }
     getPaginatedItems() {
-        return this.data;
+        return this.data ?? [];
     }
     // @deprecated Please use `nextPageInfo()` instead
     nextPageParams() {
@@ -20734,13 +20881,15 @@ class CursorPage extends core_1.AbstractPage {
         return params;
     }
     nextPageInfo() {
-        if (!this.data?.length) {
+        const data = this.getPaginatedItems();
+        if (!data.length) {
             return null;
         }
-        const next = this.data[this.data.length - 1]?.id;
-        if (!next)
+        const id = data[data.length - 1]?.id;
+        if (!id) {
             return null;
-        return { params: { after: next } };
+        }
+        return { params: { after: id } };
     }
 }
 exports.CursorPage = CursorPage;
@@ -21192,7 +21341,7 @@ exports.Chat = Chat;
 
 // File generated from our OpenAPI spec by Stainless.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Completions = exports.ChatCompletionStream = exports.ParsingFunction = exports.ChatCompletionStreamingRunner = exports.ChatCompletionRunner = void 0;
+exports.Completions = exports.ChatCompletionStream = exports.ParsingToolFunction = exports.ParsingFunction = exports.ChatCompletionStreamingRunner = exports.ChatCompletionRunner = void 0;
 const resource_1 = __nccwpck_require__(9593);
 const ChatCompletionRunner_1 = __nccwpck_require__(5575);
 var ChatCompletionRunner_2 = __nccwpck_require__(5575);
@@ -21202,6 +21351,7 @@ var ChatCompletionStreamingRunner_2 = __nccwpck_require__(794);
 Object.defineProperty(exports, "ChatCompletionStreamingRunner", ({ enumerable: true, get: function () { return ChatCompletionStreamingRunner_2.ChatCompletionStreamingRunner; } }));
 var RunnableFunction_1 = __nccwpck_require__(5464);
 Object.defineProperty(exports, "ParsingFunction", ({ enumerable: true, get: function () { return RunnableFunction_1.ParsingFunction; } }));
+Object.defineProperty(exports, "ParsingToolFunction", ({ enumerable: true, get: function () { return RunnableFunction_1.ParsingToolFunction; } }));
 const ChatCompletionStream_1 = __nccwpck_require__(7823);
 var ChatCompletionStream_2 = __nccwpck_require__(7823);
 Object.defineProperty(exports, "ChatCompletionStream", ({ enumerable: true, get: function () { return ChatCompletionStream_2.ChatCompletionStream; } }));
@@ -21872,10 +22022,11 @@ const core_3 = __nccwpck_require__(1798);
 const pagination_1 = __nccwpck_require__(7401);
 class Files extends resource_1.APIResource {
     /**
-     * Upload a file that can be used across various endpoints/features. The size of
-     * all the files uploaded by one organization can be up to 100 GB.
+     * Upload a file that can be used across various endpoints. The size of all the
+     * files uploaded by one organization can be up to 100 GB.
      *
-     * The size of individual files for can be a maximum of 512MB. See the
+     * The size of individual files can be a maximum of 512 MB or 2 million tokens for
+     * Assistants. See the
      * [Assistants Tools guide](https://platform.openai.com/docs/assistants/tools) to
      * learn more about the types of files supported. The Fine-tuning API only supports
      * `.jsonl` files.
@@ -22816,7 +22967,8 @@ async function getBytes(value) {
         }
     }
     else {
-        throw new Error(`Unexpected data type: ${typeof value}; constructor: ${value?.constructor?.name}; props: ${propsForError(value)}`);
+        throw new Error(`Unexpected data type: ${typeof value}; constructor: ${value?.constructor
+            ?.name}; props: ${propsForError(value)}`);
     }
     return parts;
 }
@@ -22910,7 +23062,7 @@ const addFormValue = async (form, key, value) => {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VERSION = void 0;
-exports.VERSION = '4.20.1'; // x-release-please-version
+exports.VERSION = '4.24.1'; // x-release-please-version
 //# sourceMappingURL=version.js.map
 
 /***/ }),
