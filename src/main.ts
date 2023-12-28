@@ -140,6 +140,10 @@ async function getAIResponse(prompt: string): Promise<Array<{
           content: prompt,
         },
       ],
+    }, {
+      query: {
+        "api-version": "2023-05-15",
+      }
     });
 
     const res = response.choices[0].message?.content?.trim() || "{}";
