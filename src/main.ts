@@ -6,12 +6,14 @@ import parseDiff, { Chunk, File } from "parse-diff";
 import minimatch from "minimatch";
 
 const GITHUB_TOKEN: string = core.getInput("GITHUB_TOKEN");
+const OPENAI_BASE_URL: string = core.getInput("OPENAI_BASE_URL");
 const OPENAI_API_KEY: string = core.getInput("OPENAI_API_KEY");
 const OPENAI_API_MODEL: string = core.getInput("OPENAI_API_MODEL");
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
 const openai = new OpenAI({
+  baseUrl: OPENAI_BASE_URL,
   apiKey: OPENAI_API_KEY,
 });
 
