@@ -184,6 +184,9 @@ async function createReviewComment(
 }
 
 async function main() {
+  console.log("main process started");
+  console.log("base_url:", OPENAI_BASE_URL);
+
   const prDetails = await getPRDetails();
   let diff: string | null;
   const eventData = JSON.parse(
